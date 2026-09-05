@@ -39,6 +39,7 @@
             color: #0284c7;
             font-size: 2rem;
             font-weight: 800;
+            cursor: pointer;
         }
         .date-info {
             color: #64748b;
@@ -79,6 +80,7 @@
             grid-template-columns: 2fr 1fr 1fr;
             gap: 20px;
             flex: 1;
+            width: 100%;
         }
 
         /* Big Lead News */
@@ -89,17 +91,23 @@
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             height: fit-content;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .lead-news:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         .lead-news img {
             width: 100%;
-            height: 300px;
+            height: 260px;
             object-fit: cover;
             border-radius: 6px;
         }
         .lead-news h2 {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             margin: 15px 0 10px 0;
             color: #0f172a;
+            line-height: 1.4;
         }
         .lead-news p {
             color: #475569;
@@ -121,6 +129,11 @@
             margin-bottom: 15px;
             padding-bottom: 15px;
             border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .sub-news-item:hover h4 {
+            color: #0284c7;
         }
         .sub-news-item img {
             width: 90px;
@@ -135,7 +148,7 @@
             line-height: 1.4;
         }
 
-        /* AdSense & Sidebar Ads Column */
+        /* AdSense Sidebar */
         .ads-column {
             display: flex;
             flex-direction: column;
@@ -154,6 +167,54 @@
             color: #94a3b8;
             border: 1px dashed #cbd5e1;
             font-size: 0.9rem;
+        }
+
+        /* Full News Reading View Container */
+        .full-news-view {
+            display: none;
+            background: #fff;
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            flex: 1;
+            width: 100%;
+        }
+        .back-btn {
+            background: #0f172a;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .back-btn:hover {
+            background: #0284c7;
+        }
+        .full-news-view img {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .full-news-view h1 {
+            font-size: 2rem;
+            color: #0f172a;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
+        .full-news-view .news-body {
+            font-size: 1.05rem;
+            color: #334155;
+            line-height: 1.8;
+            white-space: pre-line;
         }
 
         /* Footer Section */
@@ -233,7 +294,7 @@
 
     <!-- Top Header -->
     <div class="top-header">
-        <div class="logo">
+        <div class="logo" onclick="goHome()">
             <h1>ज्ञानमञ्च</h1>
         </div>
         <div class="date-info">
@@ -244,7 +305,7 @@
     <!-- Main Navigation -->
     <nav class="navbar">
         <ul class="nav-links">
-            <li class="active"><a href="#">होमपेज</a></li>
+            <li class="active"><a href="#" onclick="goHome()">होमपेज</a></li>
             <li><a href="#">आर्थिक साक्षरता</a></li>
             <li><a href="#">लगानी र सेयर बजार</a></li>
             <li><a href="#">प्रविधि र सीप</a></li>
@@ -252,7 +313,7 @@
         </ul>
     </nav>
 
-    <!-- News Grid Container -->
+    <!-- News Grid Container (Home Page View) -->
     <div class="main-container" id="newsPortalContainer">
         <!-- १. मुख्य ठूलो समाचार (Lead News) -->
         <div class="lead-news" id="leadNewsSection">
@@ -273,6 +334,12 @@
                 <span>Promotional Ad / Sidebar</span>
             </div>
         </div>
+    </div>
+
+    <!-- Full News Reading Page View (Initially Hidden) -->
+    <div class="full-news-view" id="fullNewsViewSection">
+        <button class="back-btn" onclick="goHome()"><i class="fas fa-arrow-left"></i> गृहपृष्ठमा फर्कनुहोस्</button>
+        <div id="fullNewsContent"></div>
     </div>
 
     <!-- Footer Section -->
@@ -312,7 +379,7 @@
         </div>
     </footer>
 
-    <!-- Firebase डेटा लोड गर्ने स्क्रिप्ट -->
+    <!-- Firebase डेटा र क्लिक गर्ने लजिक -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyBLIgjthPddTsuf8mR4Y6fq8ETsolelhOY",
@@ -325,9 +392,10 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
+        let allArticlesCache = [];
+
         async function loadNewsPortal() {
             try {
-                // यहाँ .orderBy हटाएर सिधै .get() राखिएको छ ताकि डाटा सजिलै तान्न सकियोस्
                 const snap = await db.collection("site_articles").get();
                 
                 if (snap.empty) {
@@ -336,26 +404,29 @@
                     return;
                 }
 
-                let articles = [];
+                allArticlesCache = [];
                 snap.forEach(doc => {
-                    articles.push(doc.data());
+                    allArticlesCache.push({ id: doc.id, ...doc.data() });
                 });
 
                 // १. पहिलो आर्टिकल मुख्य ब्यानरमा
-                const latest = articles[0];
+                const latest = allArticlesCache[0];
                 document.getElementById("leadNewsSection").innerHTML = `
-                    <img src="${latest.imageUrl || 'https://via.placeholder.com/600x300'}" alt="Lead News">
-                    <h2>${latest.title}</h2>
-                    <p>${latest.desc ? latest.desc.substring(0, 180) + '...' : ''}</p>
+                    <div onclick="openFullNews('${latest.id}')" style="cursor:pointer;">
+                        <img src="${latest.imageUrl || 'https://via.placeholder.com/600x300'}" alt="Lead News">
+                        <h2>${latest.title}</h2>
+                        <p>${latest.desc ? latest.desc.substring(0, 160) + '...' : ''}</p>
+                        <span style="color:#0284c7; font-weight:600; font-size:0.85rem; display:inline-block; margin-top:10px;">पूरा पढ्नुहोस् &raquo;</span>
+                    </div>
                 `;
 
                 // २. बाँकी आर्टिकलहरू साइड लिस्टमा
                 let subHTML = `<h3 style="font-size:1.1rem; margin-bottom:12px; border-bottom:2px solid #0284c7; padding-bottom:5px; color:#0f172a;">थप समाचारहरू</h3>`;
-                if (articles.length > 1) {
-                    for (let i = 1; i < articles.length; i++) {
-                        let art = articles[i];
+                if (allArticlesCache.length > 1) {
+                    for (let i = 1; i < allArticlesCache.length; i++) {
+                        let art = allArticlesCache[i];
                         subHTML += `
-                            <div class="sub-news-item">
+                            <div class="sub-news-item" onclick="openFullNews('${art.id}')">
                                 <img src="${art.imageUrl || 'https://via.placeholder.com/90x70'}" alt="Thumbnail">
                                 <div>
                                     <h4>${art.title}</h4>
@@ -371,6 +442,30 @@
             } catch (error) {
                 console.error("Error loading news: ", error);
             }
+        }
+
+        // पूरा समाचार देखाउने फंक्सन
+        function openFullNews(articleId) {
+            const article = allArticlesCache.find(a => a.id === articleId);
+            if (!article) return;
+
+            document.getElementById("newsPortalContainer").style.display = "none";
+            const fullView = document.getElementById("fullNewsViewSection");
+            fullView.style.display = "block";
+
+            document.getElementById("fullNewsContent").innerHTML = `
+                <img src="${article.imageUrl || 'https://via.placeholder.com/900x400'}" alt="News Image">
+                <h1>${article.title}</h1>
+                <div class="news-body">${article.desc || 'विवरण उपलब्ध छैन।'}</div>
+            `;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // गृहपृष्ठमा फर्किने फंक्सन
+        function goHome() {
+            document.getElementById("fullNewsViewSection").style.display = "none";
+            document.getElementById("newsPortalContainer").style.display = "grid";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         document.addEventListener("DOMContentLoaded", loadNewsPortal);
