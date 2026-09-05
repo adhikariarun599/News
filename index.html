@@ -7,6 +7,10 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Firebase App (v8) र Firestore SDK हरू -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
     <style>
         * {
             margin: 0;
@@ -17,9 +21,6 @@
         body {
             background-color: #f8fafc;
             color: #1e293b;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
         }
 
         /* Top Header */
@@ -65,171 +66,93 @@
         .nav-links li a:hover, .nav-links li.active a {
             background: #0284c7;
         }
-        .nav-icons {
-            display: flex;
-            gap: 15px;
-            color: #fff;
-            font-size: 1.1rem;
-            cursor: pointer;
+
+        /* Main News Grid Layout (Online Khabar Style) */
+        .main-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 20px;
         }
 
-        /* Market / Financial Ticker */
-        .stock-ticker {
+        /* Big Lead News (Left/Center Large) */
+        .lead-news {
+            grid-column: span 1;
             background: #fff;
-            margin: 15px 5%;
-            padding: 12px 20px;
+            padding: 15px;
             border-radius: 8px;
-            display: flex;
-            gap: 30px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            overflow-x: auto;
-            align-items: center;
         }
-        .trending-badge {
-            background: #0284c7;
-            color: #fff;
-            padding: 6px 15px;
-            border-radius: 4px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            white-space: nowrap;
+        .lead-news img {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+            border-radius: 6px;
         }
-        .stock-item {
-            font-size: 0.85rem;
-            white-space: nowrap;
+        .lead-news h2 {
+            font-size: 1.5rem;
+            margin: 15px 0 10px 0;
+            color: #0f172a;
         }
-        .stock-item span {
-            font-weight: 600;
-        }
-        .stock-item .down {
-            color: #dc2626;
-        }
-        .stock-item .up {
-            color: #16a34a;
-        }
-
-        /* Banner Section */
-        .banner-section {
-            margin: 0 5% 20px 5%;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            border-radius: 8px;
-            padding: 30px;
-            color: #fff;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .banner-content h2 {
-            font-size: 1.8rem;
-            margin-bottom: 10px;
-        }
-        .banner-content p {
-            color: #94a3b8;
+        .lead-news p {
+            color: #475569;
             font-size: 0.95rem;
-        }
-
-        /* Footer Section */
-        .site-footer {
-            background: #0f172a;
-            color: #cbd5e1;
-            padding: 40px 5% 20px 5%;
-            margin-top: auto;
-        }
-        .footer-container {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 30px;
-            margin-bottom: 30px;
-            border-bottom: 1px solid #1e293b;
-            padding-bottom: 30px;
-        }
-        .footer-col {
-            flex: 1;
-            min-width: 220px;
-        }
-        .footer-col h3 {
-            color: #fff;
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-            font-weight: 600;
-        }
-        .footer-col p {
-            font-size: 0.9rem;
             line-height: 1.6;
-            color: #94a3b8;
-            margin-bottom: 15px;
         }
-        .footer-links {
-            list-style: none;
+
+        /* Sub News List (Middle Column) */
+        .sub-news-list {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
-        .footer-links li {
-            margin-bottom: 10px;
-        }
-        .footer-links li a {
-            color: #94a3b8;
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: 0.2s;
-        }
-        .footer-links li a:hover {
-            color: #0284c7;
-            padding-left: 5px;
-        }
-        .social-icons {
+        .sub-news-item {
             display: flex;
-            gap: 15px;
-            font-size: 1.2rem;
-            margin-top: 15px;
+            gap: 12px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f1f5f9;
         }
-        .social-icons a {
-            color: #94a3b8;
-            transition: 0.2s;
-        }
-        .social-icons a:hover {
-            color: #0284c7;
-        }
-        .footer-bottom {
-            text-align: center;
-            font-size: 0.85rem;
-            color: #64748b;
-        }
-
-        /* Responsive Design & Extra Styles */
-        @media (max-width: 768px) {
-            .top-header {
-                flex-direction: column;
-                gap: 10px;
-                text-align: center;
-            }
-            .banner-section {
-                flex-direction: column;
-                text-align: center;
-                gap: 20px;
-            }
-            .stock-ticker {
-                padding: 10px;
-            }
-            .footer-container {
-                flex-direction: column;
-                gap: 20px;
-            }
-        }
-
-        /* Smooth Scrolling & Scrollbar Design */
-        ::-webkit-scrollbar {
-            height: 6px;
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
+        .sub-news-item img {
+            width: 100px;
+            height: 75px;
+            object-fit: cover;
             border-radius: 4px;
+            flex-shrink: 0;
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
+        .sub-news-item h4 {
+            font-size: 0.95rem;
+            color: #1e293b;
+            line-height: 1.4;
+        }
+
+        /* AdSense & Sidebar Ads Column (Right Column) */
+        .ads-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .ad-box {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            min-height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            border: 1px dashed #cbd5e1;
+        }
+
+        @media (max-width: 900px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -253,72 +176,94 @@
             <li><a href="#">लगानी र सेयर बजार</a></li>
             <li><a href="#">प्रविधि र सीप</a></li>
             <li><a href="#">कृषि तथा व्यवसाय</a></li>
-            <li><a href="#">प्रेरणादायक लेख</a></li>
-            <li><a href="#">स्वास्थ्य</a></li>
         </ul>
-        <div class="nav-icons">
-            <i class="fa-solid fa-calendar-days"></i>
-            <i class="fa-solid fa-chart-line"></i>
-            <i class="fa-solid fa-globe"></i>
-            <i class="fa-solid fa-user"></i>
-        </div>
     </nav>
 
-    <!-- Market / Ticker -->
-    <div class="stock-ticker">
-        <div class="trending-badge">मुख्य टिप्स..</div>
-        <div class="stock-item">मासिक बचत गर्नुहोस् <br><span>भविष्य सुरक्षित बनाउनुहोस्</span></div>
-        <div class="stock-item">डिजिटल कारोबारमा सतर्कता <br><span>सुरक्षित रहनुहोस्</span> <span class="up">Safe</span></div>
-        <div class="stock-item">आयका स्रोतहरू बढाउनुहोस् <br><span>पेसिव इन्कमका तरिका</span></div>
+    <!-- News Grid Container -->
+    <div class="main-container" id="newsPortalContainer">
+        <!-- १. सबैभन्दा नयाँ मुख्य समाचार (Lead News) यहाँ देखा पर्छ -->
+        <div class="lead-news" id="leadNewsSection">
+            <p style="text-align:center; color:#64748b;">लोड हुँदैछ...</p>
+        </div>
+
+        <!-- २. त्यसपछि आउने पुराना समाचारहरूको सूची (Sub News List) -->
+        <div class="sub-news-list" id="subNewsSection">
+            <!-- JavaScript ले यहाँ डाटा भर्छ -->
+        </div>
+
+        <!-- ३. Google AdSense / विज्ञापन सेक्सन -->
+        <div class="ads-column">
+            <div class="ad-box">
+                <!-- यहाँ Google AdSense को Code राख्ने (यसले कमाइ हुन्छ) -->
+                <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script> -->
+                <span>Google AdSense Banner Ad</span>
+            </div>
+            <div class="ad-box">
+                <span>Promotional Ad / Sidebar</span>
+            </div>
+        </div>
     </div>
 
-    <!-- Main Banner Section -->
-    <div class="banner-section">
-        <div class="banner-content">
-            <h2>वित्तीय साक्षरता र जीवनोपयोगी ज्ञान</h2>
-            <p>सरल भाषामा सिकौँ, बचत गरौँ र आर्थिक रूपमा आत्मनिर्भर बनौँ।</p>
-        </div>
-        <div>
-            <button style="background: #0284c7; color: #fff; border: none; padding: 12px 25px; border-radius: 5px; font-weight: 600; cursor: pointer;">थप ज्ञान लिनुहोस्</button>
-        </div>
-    </div>
+    <!-- Firebase कन्फिगरेसन र डेटा तान्ने स्क्रिप्ट -->
+    <script>
+        // तपाईंको Firebase कन्फिगरेसन यहाँ राख्नुहोस्
+        const firebaseConfig = {
+            apiKey: "तपाईंको_API_KEY",
+            authDomain: "तपाईंको_AUTH_DOMAIN",
+            projectId: "तपाईंको_PROJECT_ID",
+            storageBucket: "तपाईंको_STORAGE_BUCKET",
+            messagingSenderId: "तपाईंको_MESSAGING_SENDER_ID",
+            appId: "तपाईंको_APP_ID"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-    <!-- Footer Section -->
-    <footer class="site-footer">
-        <div class="footer-container">
-            <div class="footer-col">
-                <h3>ज्ञानमञ्च সম্পর্কে</h3>
-                <p>ज्ञानमञ्च नेपाली समाजमा वित्तीय साक्षरता, प्रविधि, र जीवनोपयोगी ज्ञान पुर्‍याउने एउटा डिजिटल माध्यम हो।</p>
-                <div class="social-icons">
-                    <a href="#"><i class="fa-brands fa-facebook"></i></a>
-                    <a href="#"><i class="fa-brands fa-youtube"></i></a>
-                    <a href="#"><i class="fa-brands fa-twitter"></i></a>
-                    <a href="#"><i class="fa-brands fa-linkedin"></i></a>
-                </div>
-            </div>
-            <div class="footer-col">
-                <h3>महत्त्वपूर्ण लिङ्कहरू</h3>
-                <ul class="footer-links">
-                    <li><a href="#">हाम्रो बारेमा</a></li>
-                    <li><a href="#">गोपनीयता नीति (Privacy Policy)</a></li>
-                    <li><a href="#">सर्त तथा नियमहरू</a></li>
-                    <li><a href="#">हामीलाई सम्पर्क गर्नुहोस्</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h3>श्रेणीहरू</h3>
-                <ul class="footer-links">
-                    <li><a href="#">आर्थिक साक्षरता</a></li>
-                    <li><a href="#">लगानी र सेयर बजार</a></li>
-                    <li><a href="#">प्रविधि र सीप</a></li>
-                    <li><a href="#">कृषि तथा व्यवसाय</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; २०२६ ज्ञानमञ्च. सर्वाधिकार सुरक्षित।</p>
-        </div>
-    </footer>
+        async function loadNewsPortal() {
+            try {
+                // site_articles बाट डाटा क्रियट भएको मितिको आधारमा उल्टो (नयाँ पहिले) तान्ने
+                const snap = await db.collection("site_articles").orderBy("createdAt", "desc").get();
+                
+                if (snap.empty) {
+                    document.getElementById("newsPortalContainer").innerHTML = `<p style="padding:20px;">कुनै पनि लेख उपलब्ध छैन।</p>`;
+                    return;
+                }
 
+                let articles = [];
+                snap.forEach(doc => {
+                    articles.push(doc.data());
+                });
+
+                // १. सबैभन्दा पहिलो (नयाँ) आर्टिकललाई मुख्य ठूलो ब्यानरमा देखाउने
+                const latest = articles[0];
+                let leadHTML = `
+                    <img src="${latest.imageUrl || ''}" alt="Lead News">
+                    <h2>${latest.title}</h2>
+                    <p>${latest.desc ? latest.desc.substring(0, 180) + '...' : ''}</p>
+                `;
+                document.getElementById("leadNewsSection").innerHTML = leadHTML;
+
+                // २. बाँकी आर्टिकलहरूलाई साइडको लिस्टमा देखाउने (पुराना समाचारहरू)
+                let subHTML = `<h3 style="font-size:1.1rem; margin-bottom:12px; border-bottom:2px solid #0284c7; padding-bottom:5px; color:#0f172a;">थप समाचारहरू</h3>`;
+                
+                for (let i = 1; i < articles.length; i++) {
+                    let art = articles[i];
+                    subHTML += `
+                        <div class="sub-news-item">
+                            <img src="${art.imageUrl || ''}" alt="Thumbnail">
+                            <div>
+                                <h4>${art.title}</h4>
+                            </div>
+                        </div>
+                    `;
+                }
+                document.getElementById("subNewsSection").innerHTML = subHTML;
+
+            } catch (error) {
+                console.error("Error loading news: ", error);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", loadNewsPortal);
+    </script>
 </body>
 </html>
