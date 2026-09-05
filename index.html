@@ -261,14 +261,12 @@
 
         <!-- २. पुराना समाचारहरूको सूची (Sub News List) -->
         <div class="sub-news-list" id="subNewsSection">
-            <!-- डाटा नभए देखाउने मेसेज -->
             <p style="color:#64748b; font-size:0.9rem;">थप समाचारहरू छैनन्।</p>
         </div>
 
         <!-- ३. Google AdSense / विज्ञापन सेक्सन -->
         <div class="ads-column">
             <div class="ad-box">
-                <!-- AdSense Script यहाँ राख्ने -->
                 <span>Google AdSense Banner Ad</span>
             </div>
             <div class="ad-box">
@@ -317,19 +315,20 @@
     <!-- Firebase डेटा लोड गर्ने स्क्रिप्ट -->
     <script>
         const firebaseConfig = {
-            apiKey: "तपाईंको_API_KEY",
-            authDomain: "तपाईंको_AUTH_DOMAIN",
-            projectId: "तपाईंको_PROJECT_ID",
-            storageBucket: "तपाईंको_STORAGE_BUCKET",
-            messagingSenderId: "तपाईंको_MESSAGING_SENDER_ID",
-            appId: "तपाईंको_APP_ID"
+            apiKey: "AIzaSyBLIgjthPddTsuf8mR4Y6fq8ETsolelhOY",
+            authDomain: "arun-courses.firebaseapp.com",
+            projectId: "arun-courses",
+            storageBucket: "arun-courses.firebasestorage.app",
+            messagingSenderId: "532244891416",
+            appId: "1:532244891416:web:90b7d7c65c047d799e406d"
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
         async function loadNewsPortal() {
             try {
-                const snap = await db.collection("site_articles").orderBy("createdAt", "desc").get();
+                // यहाँ .orderBy हटाएर सिधै .get() राखिएको छ ताकि डाटा सजिलै तान्न सकियोस्
+                const snap = await db.collection("site_articles").get();
                 
                 if (snap.empty) {
                     document.getElementById("leadNewsSection").innerHTML = `<h2>कुनै लेख उपलब्ध छैन</h2><p>कृपया एडमिन प्यानलबाट नयाँ लेख थप्नुहोस्।</p>`;
@@ -342,26 +341,30 @@
                     articles.push(doc.data());
                 });
 
-                // १. पहिलो नयाँ आर्टिकल मुख्य ब्यानरमा
+                // १. पहिलो आर्टिकल मुख्य ब्यानरमा
                 const latest = articles[0];
                 document.getElementById("leadNewsSection").innerHTML = `
-                    <img src="${latest.imageUrl || ''}" alt="Lead News">
+                    <img src="${latest.imageUrl || 'https://via.placeholder.com/600x300'}" alt="Lead News">
                     <h2>${latest.title}</h2>
                     <p>${latest.desc ? latest.desc.substring(0, 180) + '...' : ''}</p>
                 `;
 
                 // २. बाँकी आर्टिकलहरू साइड लिस्टमा
                 let subHTML = `<h3 style="font-size:1.1rem; margin-bottom:12px; border-bottom:2px solid #0284c7; padding-bottom:5px; color:#0f172a;">थप समाचारहरू</h3>`;
-                for (let i = 1; i < articles.length; i++) {
-                    let art = articles[i];
-                    subHTML += `
-                        <div class="sub-news-item">
-                            <img src="${art.imageUrl || ''}" alt="Thumbnail">
-                            <div>
-                                <h4>${art.title}</h4>
+                if (articles.length > 1) {
+                    for (let i = 1; i < articles.length; i++) {
+                        let art = articles[i];
+                        subHTML += `
+                            <div class="sub-news-item">
+                                <img src="${art.imageUrl || 'https://via.placeholder.com/90x70'}" alt="Thumbnail">
+                                <div>
+                                    <h4>${art.title}</h4>
+                                </div>
                             </div>
-                        </div>
-                    `;
+                        `;
+                    }
+                } else {
+                    subHTML += `<p style="color:#64748b; font-size:0.9rem;">थप समाचारहरू छैनन्।</p>`;
                 }
                 document.getElementById("subNewsSection").innerHTML = subHTML;
 
