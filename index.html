@@ -4,164 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>नेपालको नम्बर १ न्युज पोर्टल</title>
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-        body {
-            background-color: #f8fafc;
-            color: #1e293b;
-        }
-        /* Top Header */
-        .top-header {
-            background: #fff;
-            padding: 15px 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        .logo h1 {
-            color: #dc2626;
-            font-size: 2rem;
-            font-weight: 800;
-        }
-        .date-info {
-            color: #64748b;
-            font-size: 0.9rem;
-        }
-
-        /* Navigation Bar */
-        .navbar {
-            background: #0f172a;
-            padding: 0 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .nav-links {
-            display: flex;
-            list-style: none;
-            overflow-x: auto;
-        }
-        .nav-links li a {
-            display: block;
-            color: #fff;
-            padding: 14px 18px;
-            text-decoration: none;
-            font-size: 0.95srem;
-            transition: 0.3s;
-        }
-        .nav-links li a:hover, .nav-links li.active a {
-            background: #dc2626;
-        }
-        .nav-icons {
-            display: flex;
-            gap: 15px;
-            color: #fff;
-            font-size: 1.1rem;
-            cursor: pointer;
-        }
-
-        /* Sub Navigation / Tags Bar */
-        .sub-nav {
-            background: #fff;
-            padding: 10px 5%;
-            display: flex;
-            gap: 20px;
-            align-items: center;
-            border-bottom: 1px solid #e2e8f0;
-            overflow-x: auto;
-            white-space: nowrap;
-        }
-        .tag-item {
-            font-size: 0.85rem;
-            color: #475569;
-            background: #f1f5f9;
-            padding: 5px 12px;
-            border-radius: 20px;
-            text-decoration: none;
-            transition: 0.2s;
-        }
-        .tag-item:hover {
-            background: #e2e8f0;
-            color: #0f172a;
-        }
-        .search-box {
-            margin-left: auto;
-            display: flex;
-            align-items: center;
-            background: #f1f5f9;
-            padding: 5px 12px;
-            border-radius: 20px;
-        }
-        .search-box input {
-            border: none;
-            background: transparent;
-            outline: none;
-            padding: 2px 5px;
-            font-size: 0.85rem;
-        }
-
-        /* Stock Market Ticker */
-        .stock-ticker {
-            background: #fff;
-            margin: 15px 5%;
-            padding: 12px 20px;
-            border-radius: 8px;
-            display: flex;
-            gap: 30px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            overflow-x: auto;
-            align-items: center;
-        }
-        .trending-badge {
-            background: #2563eb;
-            color: #fff;
-            padding: 6px 15px;
-            border-radius: 4px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            white-space: nowrap;
-        }
-        .stock-item {
-            font-size: 0.85rem;
-            white-space: nowrap;
-        }
-        .stock-item span {
-            font-weight: 600;
-        }
-        .stock-item .down {
-            color: #dc2626;
-        }
-        .stock-item .up {
-            color: #16a34a;
-        }
-
-        /* Banner Section */
-        .banner-section {
-            margin: 0 5% 20px 5%;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            border-radius: 8px;
-            padding: 30px;
-            color: #fff;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .banner-content h2 {
-            font-size: 1.8rem;
-            margin-bottom: 10px;
-        }
-        .banner-content p {
-            color: #94a3b8;
-            font-size: 0.95rem;
-        }
-    </style>
+    <!-- External CSS Link -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -231,5 +77,17 @@
         </div>
     </div>
 
+    <!-- JavaScript Section -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const searchInput = document.querySelector(".search-box input");
+            if (searchInput) {
+                searchInput.addEventListener("keyup", function(e) {
+                    const searchTerm = e.target.value.toLowerCase();
+                    console.log("Searching for: ", searchTerm);
+                });
+            }
+        });
+    </script>
 </body>
 </html>
